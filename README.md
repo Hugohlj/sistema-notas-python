@@ -21,22 +21,31 @@ Projeto em Python com MySQL para cadastrar alunos, lançar notas e permitir logi
 4. No terminal, execute o sistema:
 ```bash
    python main.py
-
+```
 👤 Acesso de funcionário (para testes)
+
 Antes de usar, insira manualmente um funcionário no banco de dados para poder logar.
 
 Exemplo de SQL:
+```
 INSERT INTO funcionario (nome, cpf, senha)
 VALUES ('Yudy', '12345678900', 'senha4002');
+```
 
-✅ Funções prontas
-Login com CPF e senha
 
-Cadastro de aluno e nota
+## ✅ Funções prontas
 
-Nota vinculada a uma disciplina e ao funcionário
+1. Login com CPF e senha
 
-👥 Equipe do Projeto
+2. Cadastro de aluno e nota
+
+3. Nota vinculada a uma disciplina e ao funcionário
+
+
+
+
+## 👥 Equipe do projeto
+
 Maria Eduarda – Estrutura do Projeto e Banco de Dados
 
 Hugo Leonardo – Cadastro de Alunos e Notas
