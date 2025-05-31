@@ -1,26 +1,30 @@
-create database sistema_nota;
-use sistema_nota;
+CREATE DATABASE IF NOT EXISTS sistema_nota;
+USE sistema_nota;
 
-create table alunos(
-id int auto_increment primary key,
-nome text (100) NOT NULL,
-matricula varchar (20) unique NOT NULL
-);
-create table funcionario(
-id int auto_increment primary key,
-nome varchar (100) not null,
-cpf varchar (15) unique not null,
-senha varchar (100)  not null
+-- Tabela de funcionários
+CREATE TABLE IF NOT EXISTS funcionario (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(15) UNIQUE NOT NULL,
+    senha VARCHAR(100) NOT NULL
 );
 
+-- Tabela de alunos com CPF, endereço e matrícula
+CREATE TABLE IF NOT EXISTS alunos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(15) UNIQUE NOT NULL,
+    endereco TEXT NOT NULL,
+    matricula VARCHAR(20) UNIQUE
+);
 
-
-create table notas (
-id int auto_increment primary key,
-aluno_id int not null,
-disciplina varchar (100) not null,
-nota decimal (10,2) not null,
-foreign key(aluno_id) references alunos(id),
-funcionario_id int not null,
-foreign key (funcionario_id) references funcionario(id)
+-- Tabela de notas
+CREATE TABLE IF NOT EXISTS notas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aluno_id INT NOT NULL,
+    disciplina VARCHAR(100) NOT NULL,
+    nota DECIMAL(5,2) NOT NULL,
+    funcionario_id INT NOT NULL,
+    FOREIGN KEY (aluno_id) REFERENCES alunos(id),
+    FOREIGN KEY (funcionario_id) REFERENCES funcionario(id)
 );

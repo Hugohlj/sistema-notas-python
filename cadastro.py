@@ -1,47 +1,52 @@
-from conexao import conectar  # Importa a função de conexão com o banco de dados
+from conexao import conectar
 
-def cadastrar_aluno(nome, nota, disciplina, funcionario_id):  # Função para cadastrar aluno e nota
-    if not nome.strip():  # Verifica se o nome está vazio
+def cadastrar_aluno(nome, cpf, endereco):
+    if not nome.strip():
         print("Erro: Nome não pode estar vazio.")
         return
 
-    if not (0 <= nota <= 10):  # Verifica se a nota está entre 0 e 10
-        print("Erro: Nota deve estar entre 0 e 10.")
+    if not cpf.strip():
+        print("Erro: CPF não pode estar vazio.")
         return
 
-    if not disciplina.strip():  # Verifica se a disciplina está vazia
-        print("Erro: Disciplina não pode estar vazia.")
+    if not endereco.strip():
+        print("Erro: Endereço não pode estar vazio.")
         return
 
     try:
-        conexao = conectar()  # Conecta ao banco de dados
+        conexao = conectar()
         cursor = conexao.cursor()
 
-        # Verifica se o aluno já existe no banco pelo nome
-        cursor.execute("SELECT id FROM alunos WHERE nome = %s", (nome,))
-        aluno = cursor.fetchone()
+        # Verifica se o CPF já está cadastrado
+        cursor.execute("SELECT id FROM alunos WHERE cpf = %s", (cpf,))
+        if cursor.fetchone():
+            print("Erro: CPF já cadastrado.")
+            return
 
-        if aluno:
-            aluno_id = aluno[0]  # Usa o ID do aluno existente
-        else:
-            # Insere um novo aluno com uma matrícula gerada a partir do nome
-            cursor.execute("INSERT INTO alunos (nome, matricula) VALUES (%s, %s)", (nome, "MAT"+nome[:3]))
-            aluno_id = cursor.lastrowid  # Captura o ID gerado automaticamente
+        # Insere o aluno (sem matrícula ainda)
+        cursor.execute(
+            "INSERT INTO alunos (nome, cpf, endereco) VALUES (%s, %s, %s)",
+            (nome, cpf, endereco)
+        )
+        aluno_id = cursor.lastrowid  # Captura o ID gerado
 
-        # Insere a nota do aluno para a disciplina, associada ao funcionário
-        query_nota = """
-            INSERT INTO notas (aluno_id, disciplina, nota, funcionario_id)
-            VALUES (%s, %s, %s, %s)
-        """
-        cursor.execute(query_nota, (aluno_id, disciplina, nota, funcionario_id))  # Executa o INSERT
-        conexao.commit()  # Salva as alterações no banco
+        # Gera matrícula no formato MAT0001
+        matricula = f"MAT{aluno_id:04d}"
 
-        print(f"Aluno '{nome}' registrado com nota {nota} em '{disciplina}'.")  # Confirmação para o usuário
+        # Atualiza o campo matrícula
+        cursor.execute(
+            "UPDATE alunos SET matricula = %s WHERE id = %s",
+            (matricula, aluno_id)
+        )
+
+        conexao.commit()
+        print(f"Aluno '{nome}' cadastrado com matrícula {matricula}.")
 
     except Exception as erro:
-        print("Erro ao cadastrar aluno:", erro)  # Mostra erro se algo falhar
+        print("Erro ao cadastrar aluno:", erro)
+        conexao.rollback()
 
     finally:
-        if conexao.is_connected():  # Fecha a conexão se estiver ativa
+        if conexao.is_connected():
             cursor.close()
             conexao.close()
